@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getWeatherUrl } from './config/api';
 import './App.css';
 import SearchBox from './components/SearchBox';
@@ -9,6 +9,18 @@ function App() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [history, setHistory] = useState(() => {
+    try {
+      const stored = localStorage.getItem('history');
+      return stored ? JSON.parse(stored) : [];
+    } catch (err) {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem('history', JSON.stringify(history));
+  },[history]);
 
   async function handleSearch() {
     console.log(city);
@@ -29,13 +41,17 @@ function App() {
         return;
       }
 
+      setHistory(prev => {
+        const filtered = prev.filter(item => item !== city);
+        return [city, ...filtered].slice(0, 5);
+      });
+
       setData(result);
     } catch (err) {
       setError('Something wrong');
     } finally {
       setLoading(false);
     }
-
   }
 
   return ( 
@@ -48,8 +64,15 @@ function App() {
         onSearch={handleSearch}
       />
 
-      {loading && <p>Loading...</p>}
-      {error && <p>{error}</p>}
+      {loading && <p>Loading... ⏳</p>}
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {history.length > 0 && <p>Search History:</p>}
+      {history.slice(0, 5).map((item, index) => (
+        <p key={index} onClick={() => {
+          setCity(item);
+          handleSearch();
+        }}>{item}</p>
+      ))}
 
       {data && (<WeatherCard data={data} />)}
     </div>
