@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import { getWeatherUrl } from './config/api';
 import './App.css';
 import SearchBox from './components/SearchBox';
@@ -54,6 +54,44 @@ function App() {
     }
   }
 
+  function getLocationWeather() {
+    if (!navigator.geolocation) {
+      setError('Geolocation is not supported');
+      return;
+    }
+    
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+
+        try {
+          setLoading(true);
+          setError('');
+
+          const response = await fetch(
+            `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${import.meta.env.VITE_API_KEY}`
+          );
+
+          const result = await response.json();
+
+          setData(result);
+        } catch (err) {
+          setError('Failed to get location weather');
+        } finally {
+          setLoading(false);
+        }
+      },
+      () => {
+        setError('Permission denied');
+      }
+    );
+  }
+
+  useEffect(() => {
+    getLocationWeather();
+  }, []);
+
   return ( 
     <div className='app'>
       <h1>Weather App 🌦️</h1>
@@ -62,13 +100,14 @@ function App() {
         city={city}
         setCity={setCity}
         onSearch={handleSearch}
+        onGetLocationWeather={getLocationWeather}
       />
 
       {loading && <p>Loading... ⏳</p>}
       {error && <p style={{ color: 'red' }}>{error}</p>}
       {history.length > 0 && <p>Search History:</p>}
       {history.slice(0, 5).map((item, index) => (
-        <p key={index} onClick={() => {
+        <p className='history-item' key={index} onClick={() => {
           setCity(item);
           handleSearch();
         }}>{item}</p>

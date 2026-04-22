@@ -16,7 +16,7 @@ function WeatherCard({ data }) {
     const formattedDesc = desc.charAt(0).toUpperCase() + desc.slice(1);
     
     return (
-        <div>
+        <div className="card">
             <h2>{icon} {data.name}</h2>
             <p>{data.main.temp} ⁰C</p>
             <p>{formattedDesc}</p>

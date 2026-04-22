@@ -1,4 +1,4 @@
-function SearchBox({ city, setCity, onSearch}) {
+function SearchBox({ city, setCity, onSearch, onGetLocationWeather }) {
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
             onSearch();
@@ -14,6 +14,7 @@ function SearchBox({ city, setCity, onSearch}) {
                 placeholder="Search your city here"
             />
             <button onClick={onSearch}>Search</button>
+            <button onClick={onGetLocationWeather}>Use My Location</button>
         </div>
     );
 }

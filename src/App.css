@@ -1,13 +1,13 @@
 body {
   font-family: Arial, sans-serif;
-  background: #0f172a;
+  background: linear-gradient(135deg, #74ebd5, #ACB6E5);
   color: white;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
   margin: 0;
-  padding: 20px;
+  padding: 20px;;
 }
 
 .app {
@@ -17,12 +17,28 @@ body {
   width: 90%;
   max-width: 400px;
   text-align: center;
+  margin: 40px auto;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+  margin-top: 20px;
+  color: black;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 25px 50px rgba(0,0,0,0.2);
 }
 
 h1 {
-  font-size: 24px;
-  margin-bottom: 15px;
-  line-height: 1.2;
+  font-size: 28px;
+  margin-bottom: 18px;
+  letter-spacing: 0.5px;
 }
 
 .search {
@@ -33,15 +49,16 @@ h1 {
 
 input {
   flex: 1;
-  padding: 8px;
-  border-radius: 6px;
+  padding: 10px;
+  border-radius: 8px;
   border: none;
+  outline: none;
 }
 
 button {
   padding: 8px 12px;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   background: #38bdf8;
   color: black;
   cursor: pointer;
@@ -49,5 +66,16 @@ button {
 
 button:hover {
   background: #0ea5e9;
+}
+
+.history-item {
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.history-item:hover {
+  background: rgba(255,255,255,0.2);
 }
 
