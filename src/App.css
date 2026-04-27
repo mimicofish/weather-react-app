@@ -1,7 +1,23 @@
+:root {
+  --bg: linear-gradient(135deg, #0f172a, #1e293b);
+  --card-bg: rgba(255,255,255,0.1);
+  --app-bg: #1e293b;
+  --text: white;
+  --input-bg: rgba(255,255,255,0.1);
+}
+
+.light {
+  --bg: linear-gradient(135deg, #e2e8f0, #f8fafc);
+  --app-bg: #ffffff;
+  --card-bg: rgba(0,0,0,0.05);
+  --text: #0f172a;
+  --input-bg: rgba(0,0,0,0.05);
+}
+
 body {
-  font-family: Arial, sans-serif;
-  background: linear-gradient(135deg, #74ebd5, #ACB6E5);
-  color: white;
+  font-family: 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -11,23 +27,29 @@ body {
 }
 
 .app {
-  background: #1e293b;
+  background: var(--app-bg);
   padding: 20px;
   border-radius: 12px;
-  width: 90%;
-  max-width: 400px;
+  width: 100%;
+  max-width: 420px;
   text-align: center;
-  margin: 40px auto;
+  margin: auto;
 }
 
 .card {
-  background: white;
+  background: var(--card-bg);
+  backdrop-filter: blur(10px);
   padding: 20px;
   border-radius: 16px;
   box-shadow: 0 15px 40px rgba(0,0,0,0.15);
   margin-top: 20px;
-  color: black;
-  transition: transform 0.2s, box-shadow 0.2s;
+  color: var(--text);
+  transition: all 0.3s ease;
+}
+
+.card img {
+  width: 80px;
+  margin-bottom: -10px;
 }
 
 .card:hover {
@@ -41,6 +63,10 @@ h1 {
   letter-spacing: 0.5px;
 }
 
+.title {
+  color: var(--text);
+}
+
 .search {
   display: flex;
   gap: 10px;
@@ -49,6 +75,8 @@ h1 {
 
 input {
   flex: 1;
+  background: var(--input-bg);
+  color: var(--text);
   padding: 10px;
   border-radius: 8px;
   border: none;
@@ -59,13 +87,14 @@ button {
   padding: 8px 12px;
   border: none;
   border-radius: 8px;
-  background: #38bdf8;
-  color: black;
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  color: var(--text);
   cursor: pointer;
+  transition: 0.2s;
 }
 
 button:hover {
-  background: #0ea5e9;
+  transform: scale(1.05);
 }
 
 .history-item {
@@ -73,9 +102,54 @@ button:hover {
   padding: 6px;
   border-radius: 6px;
   transition: background 0.2s;
+  color: var(--text);
 }
 
 .history-item:hover {
-  background: rgba(255,255,255,0.2);
+  background: var(--bg);
 }
 
+.history-title {
+  color: var(--text);
+}
+
+.details {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+  font-size: 20px;
+}
+
+.details div {
+  text-align: center;
+}
+
+.details div span {
+  display: block;
+  font-size: 20px;
+  margin-bottom: 5px;
+}
+
+.temp {
+  font-size: 42px;
+  margin: 10px 0;
+}
+
+.desc {
+  font-size: 18px;
+  margin-bottom: 15px;
+  font-weight: bold;
+}
+
+.city {
+  font-size: 28px;
+  margin-top: 0;
+}
+
+.toggle-theme {
+  margin-bottom: 20px;
+}
+
+body, .app, .card, input {
+  transition: all 0.3s ease;
+}

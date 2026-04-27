@@ -9,6 +9,13 @@ function App() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  
+  
+  const [isLight, setIsLight] = useState(() => {
+    const storedTheme = localStorage.getItem('theme');
+    return storedTheme === 'light';
+  });
+
   const [history, setHistory] = useState(() => {
     try {
       const stored = localStorage.getItem('history');
@@ -21,6 +28,10 @@ function App() {
   useEffect(() => {
     localStorage.setItem('history', JSON.stringify(history));
   },[history]);
+
+  useEffect(() => {
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+  }, [isLight]);
 
   async function handleSearch() {
     console.log(city);
@@ -93,8 +104,12 @@ function App() {
   }, []);
 
   return ( 
-    <div className='app'>
-      <h1>Weather App 🌦️</h1>
+    <div className={`app ${isLight ? 'light' : ''}`}>
+      <h1 className='title'>Weather App 🌦️</h1>
+
+      <button className='toggle-theme' onClick={() => setIsLight(prev => !prev)}>
+        {isLight ? '🌙 Dark' : '☀️ Light'}
+      </button>
 
       <SearchBox
         city={city}
@@ -105,15 +120,14 @@ function App() {
 
       {loading && <p>Loading... ⏳</p>}
       {error && <p style={{ color: 'red' }}>{error}</p>}
-      {history.length > 0 && <p>Search History:</p>}
+      {history.length > 0 && <p className='history-title'>Search History:</p>}
       {history.slice(0, 5).map((item, index) => (
         <p className='history-item' key={index} onClick={() => {
           setCity(item);
           handleSearch();
         }}>{item}</p>
       ))}
-
-      {data && (<WeatherCard data={data} />)}
+      {data && (<WeatherCard data={data} />)}      
     </div>
   );
 }
