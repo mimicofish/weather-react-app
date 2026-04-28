@@ -1,4 +1,4 @@
-function WeatherCard({ data }) {
+function WeatherCard({ data, onFavorite }) {
 
     const condition = data.weather[0].main;
     const icon =  data.weather[0].icon;
@@ -27,6 +27,10 @@ function WeatherCard({ data }) {
                     <p>{Math.round(data.main.feels_like)} °C</p>
                 </div>
             </div>
+
+            <button onClick={() => onFavorite(data.name)}>
+                ⭐ Add to Favorites
+            </button>
         </div>
     );
 }

@@ -10,6 +10,8 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   
+  const [showHistory, setShowHistory] = useState(false);
+  const [showFavorites, setShowFavorites] = useState(false);
   
   const [isLight, setIsLight] = useState(() => {
     const storedTheme = localStorage.getItem('theme');
@@ -25,6 +27,11 @@ function App() {
     }
   });
 
+  const [favorites, setFavorites] = useState(() => { 
+    const stored = localStorage.getItem('favorites');
+    return stored ? JSON.parse(stored) : [];
+  });
+
   useEffect(() => {
     localStorage.setItem('history', JSON.stringify(history));
   },[history]);
@@ -32,6 +39,18 @@ function App() {
   useEffect(() => {
     localStorage.setItem('theme', isLight ? 'light' : 'dark');
   }, [isLight]);
+
+  useEffect(() => {
+    localStorage.setItem('favorites', JSON.stringify(favorites));
+  }, [favorites]);
+
+  function formatCity(name) {
+    return name
+    .toLowerCase()
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+  }
 
   async function handleSearch() {
     console.log(city);
@@ -53,8 +72,15 @@ function App() {
       }
 
       setHistory(prev => {
-        const filtered = prev.filter(item => item !== city);
-        return [city, ...filtered].slice(0, 5);
+        const normalized = city.trim().toLowerCase();
+
+        const filtered = prev.filter(
+          item => item.toLowerCase() !== normalized
+        );
+
+        const formattedCity = formatCity(city.trim());
+
+        return [formattedCity, ...filtered];
       });
 
       setData(result);
@@ -103,6 +129,18 @@ function App() {
     getLocationWeather();
   }, []);
 
+  function handleFavorites(city) {
+    setFavorites(prev => {
+      const exists = prev.some(item => 
+        item.toLowerCase() === city.toLowerCase()
+    );
+
+      if (exists) return prev;
+
+      return [city, ...prev];
+    });
+  }
+
   return ( 
     <div className={`app ${isLight ? 'light' : ''}`}>
       <h1 className='title'>Weather App 🌦️</h1>
@@ -118,16 +156,46 @@ function App() {
         onGetLocationWeather={getLocationWeather}
       />
 
-      {loading && <p>Loading... ⏳</p>}
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {history.length > 0 && <p className='history-title'>Search History:</p>}
-      {history.slice(0, 5).map((item, index) => (
-        <p className='history-item' key={index} onClick={() => {
+      {loading && <div className='loader'></div>}
+      {error && <div className='error'>{error}</div>}
+
+      {history.length > 0 && 
+      <p 
+        className='history-title'
+        onClick={() => setShowHistory(prev => !prev)}
+      >
+        📜 History: {showHistory ? '🔺' : '🔻'}
+      </p>}
+
+      {showHistory && history.slice(0, 5).map((item) => (
+        <p className='history-item' key={item} onClick={() => {
           setCity(item);
           handleSearch();
         }}>{item}</p>
       ))}
-      {data && (<WeatherCard data={data} />)}      
+
+      {data && (<WeatherCard data={data} onFavorite={handleFavorites} />)}      
+
+      {!data && !loading && !error && (
+        <p className='placeholder'
+        >Search for a city to see the weather 🌏</p>)}
+
+      {favorites.length > 0 && 
+      <p 
+        className='favorites-title'
+        onClick={() => setShowFavorites(prev => !prev)}
+      >
+        ⭐ Favorites: {showFavorites ? '🔺' : '🔻'}
+      </p>}
+      
+      {showFavorites && favorites.map((city) => (
+        <p className='favorites-item' key={city} onClick={() => {
+          setCity(city);
+          handleSearch();
+        }}>
+          ⭐ {city}
+        </p>
+      ))}
     </div>
   );
 }
