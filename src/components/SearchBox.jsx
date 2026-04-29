@@ -13,7 +13,7 @@ function SearchBox({ city, setCity, onSearch, onGetLocationWeather, loading}) {
                 onKeyDown={handleKeyDown}
                 placeholder="Search your city here"
             />
-            <button onClick={onSearch} disabled={loading}>
+            <button onClick={() => onSearch()} disabled={loading}>
                 {loading ? 'Loading...' : 'Search'}
             </button>
             <button onClick={onGetLocationWeather} disabled={loading}>

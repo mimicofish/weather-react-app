@@ -200,6 +200,7 @@ function App() {
       
       {showFavorites && favorites.map((city) => (
         <p className='favorites-item' key={city} onClick={() => {
+          setCity(city);
           handleSearch(city);
         }}>
           ⭐ {city}
