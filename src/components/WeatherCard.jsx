@@ -1,4 +1,4 @@
-function WeatherCard({ data, onFavorite }) {
+function WeatherCard({ data, onFavorite, onRemoveFavorite }) {
 
     const condition = data.weather[0].main;
     const icon =  data.weather[0].icon;
@@ -30,6 +30,10 @@ function WeatherCard({ data, onFavorite }) {
 
             <button onClick={() => onFavorite(data.name)}>
                 ⭐ Add to Favorites
+            </button>
+
+            <button onClick={() => onRemoveFavorite(data.name)}>
+                ❌ Remove 
             </button>
         </div>
     );

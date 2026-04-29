@@ -52,16 +52,16 @@ function App() {
     .join(' ');
   }
 
-  async function handleSearch() {
-    console.log(city);
-
-    if (city.trim() === '') return;
+  async function handleSearch(customCity) {
+    const searchCity = customCity || city;
+    
+    if (searchCity.trim() === '') return;
 
     try {
       setLoading(true);
       setError('');
 
-      const response = await fetch(getWeatherUrl(city));
+      const response = await fetch(getWeatherUrl(searchCity));
 
       const result = await response.json();
 
@@ -72,13 +72,13 @@ function App() {
       }
 
       setHistory(prev => {
-        const normalized = city.trim().toLowerCase();
+        const normalized = searchCity.trim().toLowerCase();
 
         const filtered = prev.filter(
           item => item.toLowerCase() !== normalized
         );
 
-        const formattedCity = formatCity(city.trim());
+        const formattedCity = formatCity(searchCity.trim());
 
         return [formattedCity, ...filtered];
       });
@@ -141,6 +141,12 @@ function App() {
     });
   }
 
+  function removeFromFavorites(city) {
+    setFavorites(prev => 
+      prev.filter(item => item.toLowerCase() !== city.toLowerCase())
+    );
+  }
+
   return ( 
     <div className={`app ${isLight ? 'light' : ''}`}>
       <h1 className='title'>Weather App 🌦️</h1>
@@ -154,6 +160,7 @@ function App() {
         setCity={setCity}
         onSearch={handleSearch}
         onGetLocationWeather={getLocationWeather}
+        loading={loading}
       />
 
       {loading && <div className='loader'></div>}
@@ -169,12 +176,15 @@ function App() {
 
       {showHistory && history.slice(0, 5).map((item) => (
         <p className='history-item' key={item} onClick={() => {
-          setCity(item);
-          handleSearch();
-        }}>{item}</p>
+          handleSearch(item);
+        }}>{item === data?.name && '📍'} {item}</p>
       ))}
 
-      {data && (<WeatherCard data={data} onFavorite={handleFavorites} />)}      
+      {data && (<WeatherCard 
+      data={data} 
+      onFavorite={handleFavorites} 
+      onRemoveFavorite={removeFromFavorites}
+      />)}      
 
       {!data && !loading && !error && (
         <p className='placeholder'
@@ -190,8 +200,7 @@ function App() {
       
       {showFavorites && favorites.map((city) => (
         <p className='favorites-item' key={city} onClick={() => {
-          setCity(city);
-          handleSearch();
+          handleSearch(city);
         }}>
           ⭐ {city}
         </p>
