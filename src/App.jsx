@@ -9,6 +9,7 @@ function App() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [debouncedCity, setDebouncedCity] = useState(city);
   
   const [showHistory, setShowHistory] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
@@ -43,6 +44,20 @@ function App() {
   useEffect(() => {
     localStorage.setItem('favorites', JSON.stringify(favorites));
   }, [favorites]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedCity(city);
+    }, 500);
+
+    return () => clearTimeout(handler);
+  }, [city]);
+
+  useEffect(() => {
+    if (!debouncedCity) return;
+    
+    handleSearch(debouncedCity);
+  }, [debouncedCity]);
 
   function formatCity(name) {
     return name
@@ -158,7 +173,7 @@ function App() {
       <SearchBox
         city={city}
         setCity={setCity}
-        onSearch={handleSearch}
+        onSearch={(city) => handleSearch(city)}
         onGetLocationWeather={getLocationWeather}
         loading={loading}
       />
@@ -174,11 +189,15 @@ function App() {
         📜 History: {showHistory ? '🔺' : '🔻'}
       </p>}
 
-      {showHistory && history.slice(0, 5).map((item) => (
-        <p className='history-item' key={item} onClick={() => {
-          handleSearch(item);
-        }}>{item === data?.name && '📍'} {item}</p>
-      ))}
+      <div className={`history-list ${showHistory ? 'show' : ''}`}>
+        {history.map((item) => (
+          <p className={`history-item ${item.toLowerCase() === data?.name.toLowerCase() ? 'active' : ''}`} 
+          key={item} 
+          onClick={() => {
+            handleSearch(item);
+          }}>{item === data?.name && '📍'} {item}</p>
+        ))}
+      </div>
 
       {data && (<WeatherCard 
       data={data} 
@@ -197,15 +216,19 @@ function App() {
       >
         ⭐ Favorites: {showFavorites ? '🔺' : '🔻'}
       </p>}
-      
-      {showFavorites && favorites.map((city) => (
-        <p className='favorites-item' key={city} onClick={() => {
-          setCity(city);
-          handleSearch(city);
+
+      <div className={`favorites-list ${showFavorites ? 'show' : ''}`}>
+        {favorites.map((city) => (
+          <p className={`favorites-item ${city.toLowerCase() === data?.name.toLowerCase() ?'active' : ''}`} 
+          key={city} 
+          onClick={() => {
+            handleSearch(city);
         }}>
+          {city.toLowerCase() === data?.name?.toLowerCase() && '📍'}
           ⭐ {city}
         </p>
       ))}
+      </div>
     </div>
   );
 }

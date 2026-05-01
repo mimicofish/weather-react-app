@@ -126,6 +126,22 @@ button:hover {
   color: var(--text);
 }
 
+.history-list {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.history-list.show {
+  max-height: 200px;
+}
+
+.history-item.active {
+  background: rgba(58, 189,248, 0.3);
+  border-radius: 6px;
+  font-weight: bold;
+}
+
 .history-item:hover {
   background: var(--bg);
 }
@@ -184,6 +200,22 @@ button:hover {
   border-radius: 6px;
   transition: background 0.2s;
   color: var(--text);  
+}
+
+.favorites-list {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.favorites-list.show {
+  max-height: 200px;
+}
+
+.favorites-item.active {
+  background: rgba(248, 113, 113, 0.3);
+  border-radius: 6px;
+  font-weight: bold;
 }
 
 .favorites-item:hover {
