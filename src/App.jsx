@@ -1,4 +1,4 @@
-import { use, useEffect, useState } from 'react';
+import { use, useEffect, useState, useRef } from 'react';
 import { getWeatherUrl } from './config/api';
 import './App.css';
 import SearchBox from './components/SearchBox';
@@ -10,7 +10,11 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [debouncedCity, setDebouncedCity] = useState(city);
-  
+
+  const [activeCity, setActiveCity] = useState('');
+  const historyRef = useRef(null);
+  const activeRef = useRef(null);
+
   const [showHistory, setShowHistory] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
   
@@ -67,8 +71,25 @@ function App() {
     .join(' ');
   }
 
-  async function handleSearch(customCity) {
+  useEffect(() => {
+    if (!showHistory) return;
+
+    const timeOut = setTimeout(() => {
+      if (activeRef.current) {
+        activeRef.current.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+      }
+    }, 100);
+
+    return () => clearTimeout(timeOut);
+  }, [activeCity, showHistory]);
+
+  async function handleSearch(customCity, fromHistory = false) {
     const searchCity = customCity || city;
+
+    setActiveCity(searchCity);
     
     if (searchCity.trim() === '') return;
 
@@ -85,18 +106,19 @@ function App() {
         setData(null);
         return;
       }
+      if (!fromHistory) {
+        setHistory(prev => {
+          const normalized = searchCity.trim().toLowerCase();
 
-      setHistory(prev => {
-        const normalized = searchCity.trim().toLowerCase();
-
-        const filtered = prev.filter(
+          const filtered = prev.filter(
           item => item.toLowerCase() !== normalized
         );
 
-        const formattedCity = formatCity(searchCity.trim());
+          const formattedCity = formatCity(searchCity.trim());
 
-        return [formattedCity, ...filtered];
-      });
+          return [formattedCity, ...filtered];
+        });
+      }
 
       setData(result);
     } catch (err) {
@@ -189,14 +211,27 @@ function App() {
         📜 History: {showHistory ? '🔺' : '🔻'}
       </p>}
 
-      <div className={`history-list ${showHistory ? 'show' : ''}`}>
-        {history.map((item) => (
-          <p className={`history-item ${item.toLowerCase() === data?.name.toLowerCase() ? 'active' : ''}`} 
-          key={item} 
-          onClick={() => {
-            handleSearch(item);
-          }}>{item === data?.name && '📍'} {item}</p>
-        ))}
+      <div
+        ref={historyRef}
+        className={`history-list ${showHistory ? 'show' : ''}`}
+      >
+        {history.map((item) => {
+          const isActive = 
+            item.toLowerCase() === activeCity.trim().toLowerCase();
+          
+          return (
+            <p 
+              ref={isActive ? activeRef : null}
+              className={`history-item ${isActive ? 'active' : ''}`} 
+              key={item} 
+              onClick={() => {
+                handleSearch(item, true);
+            }}
+            >
+              {item === data?.name && '📍'} {item}
+            </p>
+          );
+        })}
       </div>
 
       {data && (<WeatherCard 
@@ -219,7 +254,7 @@ function App() {
 
       <div className={`favorites-list ${showFavorites ? 'show' : ''}`}>
         {favorites.map((city) => (
-          <p className={`favorites-item ${city.toLowerCase() === data?.name.toLowerCase() ?'active' : ''}`} 
+          <p className={`favorites-item ${city.toLowerCase() === data?.name?.toLowerCase() ?'active' : ''}`} 
           key={city} 
           onClick={() => {
             handleSearch(city);

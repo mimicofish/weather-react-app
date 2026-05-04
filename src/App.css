@@ -128,8 +128,8 @@ button:hover {
 
 .history-list {
   max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.3s ease;
+  overflow-y: auto;
+  transition: all 0.3s ease;
 }
 
 .history-list.show {
