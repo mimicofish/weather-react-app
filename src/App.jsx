@@ -107,17 +107,8 @@ function App() {
         return;
       }
       if (!fromHistory) {
-        setHistory(prev => {
-          const normalized = searchCity.trim().toLowerCase();
-
-          const filtered = prev.filter(
-          item => item.toLowerCase() !== normalized
+        setHistory(prev => updateHistory(prev, searchCity)
         );
-
-          const formattedCity = formatCity(searchCity.trim());
-
-          return [formattedCity, ...filtered];
-        });
       }
 
       setData(result);
@@ -169,8 +160,8 @@ function App() {
   function handleFavorites(city) {
     setFavorites(prev => {
       const exists = prev.some(item => 
-        item.toLowerCase() === city.toLowerCase()
-    );
+        isSameCity(item, city)
+      );
 
       if (exists) return prev;
 
@@ -180,8 +171,23 @@ function App() {
 
   function removeFromFavorites(city) {
     setFavorites(prev => 
-      prev.filter(item => item.toLowerCase() !== city.toLowerCase())
+      prev.filter(item => !isSameCity(item, city))
     );
+  }
+
+  function normalizedCityName(name) {
+    return name?.trim().toLowerCase() || '';
+  }
+
+  function isSameCity(a, b) {
+    return normalizedCityName(a) === normalizedCityName(b);
+  }
+
+  function updateHistory(prevHistory, city) {
+    const filtered = prevHistory.filter(item => !isSameCity(item, city));
+    const formattedCity = formatCity(city);
+    
+    return [formattedCity, ...filtered];
   }
 
   return ( 
@@ -217,7 +223,7 @@ function App() {
       >
         {history.map((item) => {
           const isActive = 
-            item.toLowerCase() === activeCity.trim().toLowerCase();
+            isSameCity(item, activeCity);
           
           return (
             <p 
@@ -254,15 +260,15 @@ function App() {
 
       <div className={`favorites-list ${showFavorites ? 'show' : ''}`}>
         {favorites.map((city) => (
-          <p className={`favorites-item ${city.toLowerCase() === data?.name?.toLowerCase() ?'active' : ''}`} 
+          <p className={`favorites-item ${isSameCity(city, data?.name) ? 'active' : ''}`} 
           key={city} 
           onClick={() => {
             handleSearch(city);
         }}>
-          {city.toLowerCase() === data?.name?.toLowerCase() && '📍'}
+          {isSameCity(city, data?.name) && '📍'}
           ⭐ {city}
-        </p>
-      ))}
+          </p>
+        ))}
       </div>
     </div>
   );
