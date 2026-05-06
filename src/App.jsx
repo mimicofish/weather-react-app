@@ -87,33 +87,22 @@ function App() {
   }, [activeCity, showHistory]);
 
   async function handleSearch(customCity, fromHistory = false) {
-    const searchCity = customCity || city;
+    const searchCity = getSearchCity(customCity);
 
     setActiveCity(searchCity);
     
-    if (searchCity.trim() === '') return;
+    if (!searchCity) return;
 
     try {
       setLoading(true);
       setError('');
 
-      const response = await fetch(getWeatherUrl(searchCity));
+      const result = await fetchWeather(searchCity);
 
-      const result = await response.json();
-
-      if (result.cod !== 200) {
-        setError(result.message);
-        setData(null);
-        return;
-      }
-      if (!fromHistory) {
-        setHistory(prev => updateHistory(prev, searchCity)
-        );
-      }
-
-      setData(result);
+      handleSuccess(result, searchCity);
+      
     } catch (err) {
-      setError('Something wrong');
+      handleError(err);
     } finally {
       setLoading(false);
     }
@@ -188,6 +177,49 @@ function App() {
     const formattedCity = formatCity(city);
     
     return [formattedCity, ...filtered];
+  }
+
+  function getSearchCity(customCity) {
+    const value = customCity || city;
+
+    if (!value) return '';
+
+    return value.trim();
+  }
+
+  async function fetchWeather(city) {
+    const response = await fetch(getWeatherUrl(city));
+
+    if (!response.ok) {
+      throw new Error('Network error');
+    }
+
+    const result = await response.json();
+
+    if (result.cod !== 200) {
+      throw new Error(result.message);
+    }
+
+    return result;
+  }
+
+  function handleSuccess(result, city) {
+    setHistory(prev => updateHistory(prev, city));
+    setData(result);
+  }
+
+  function handleError(err) {
+    console.error(err);
+    
+    const message = 
+      err instanceof Error 
+        ? err.message 
+        : typeof err ==='string'
+        ? err 
+        : 'Something went wrong';
+    
+    setError(message);
+    setData(null);
   }
 
   return ( 
