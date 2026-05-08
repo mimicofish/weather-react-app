@@ -38,6 +38,23 @@ body {
   max-width: 420px;
   text-align: center;
   margin: auto;
+  transition: background 0.5s ease;
+}
+
+.app.clear {
+  --app-bg: linear-gradient(135deg, #4facfe, #00f2fe);
+}
+
+.app.clouds {
+  --app-bg: linear-gradient(135deg, #bdc3c7, #2c3e50);
+}
+
+.app.rain {
+  --app-bg: linear-gradient(135deg, #314755, #26a0da);
+}
+
+.app.thunderstorm {
+  --app-bg: linear-gradient(135deg, #232526, #414345);
 }
 
 .card {
@@ -48,7 +65,8 @@ body {
   box-shadow: 0 15px 40px rgba(0,0,0,0.15);
   margin-top: 20px;
   color: var(--text);
-  transition: all 0.3s ease;
+
+  animation: fadeIn 0.4s ease;
 }
 
 .card img {
@@ -136,6 +154,15 @@ button:hover {
   max-height: 200px;
 }
 
+.history-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.history-list::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.3);
+  border-radius: 10px;
+}
+
 .history-item.active {
   background: rgba(58, 189,248, 0.3);
   border-radius: 6px;
@@ -212,6 +239,31 @@ button:hover {
   max-height: 200px;
 }
 
+.history-list, 
+.favorites-list {
+  max-height: 0;
+  opacity: 0;
+
+  transition:
+    max-height 0.4s ease,
+    opacity 0.3s ease;
+} 
+
+.history-list.show, 
+.favorites-list.show {
+  max-height: 300px;
+  opacity: 1;
+}
+
+.history-item, .favorites-item {
+  transform: translateY(-5px);
+  transition: all 0.2s ease;
+}
+
+.history-item:hover, .favorites-item:hover {
+  transform: translateY(0);
+}
+
 .favorites-item.active {
   background: rgba(248, 113, 113, 0.3);
   border-radius: 6px;
@@ -243,5 +295,17 @@ body, .app, .card, input {
 @keyframes spin {
   to { 
     transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeIn {
+  from { 
+    opacity: 0; 
+    transform: translateY(20px);
+  }
+
+  to { 
+    opacity: 1; 
+    transform: translateY(0);
   }
 }

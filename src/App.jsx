@@ -11,6 +11,9 @@ function App() {
   const [error, setError] = useState('');
   const [debouncedCity, setDebouncedCity] = useState(city);
 
+  //For dynamic background based on weather condition
+  const weatherCondition = data?.weather[0]?.main;
+
   const [activeCity, setActiveCity] = useState('');
   const historyRef = useRef(null);
   const activeRef = useRef(null);
@@ -99,8 +102,12 @@ function App() {
 
       const result = await fetchWeather(searchCity);
 
-      handleSuccess(result, searchCity);
-      
+      if (!fromHistory) {
+        handleSuccess(result, searchCity);
+      } else {
+        setData(result);
+      }
+
     } catch (err) {
       handleError(err);
     } finally {
@@ -176,7 +183,7 @@ function App() {
     const filtered = prevHistory.filter(item => !isSameCity(item, city));
     const formattedCity = formatCity(city);
     
-    return [formattedCity, ...filtered];
+    return [formattedCity, ...filtered].slice(0, 10);
   }
 
   function getSearchCity(customCity) {
@@ -223,7 +230,7 @@ function App() {
   }
 
   return ( 
-    <div className={`app ${isLight ? 'light' : ''}`}>
+    <div className={`app ${isLight ? 'light' : ''}${weatherCondition?.toLowerCase()}`}>
       <h1 className='title'>Weather App 🌦️</h1>
 
       <button className='toggle-theme' onClick={() => setIsLight(prev => !prev)}>
