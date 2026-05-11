@@ -256,6 +256,10 @@ function App() {
         📜 History: {showHistory ? '🔺' : '🔻'}
       </p>}
 
+      {showHistory && history.length === 0 && (
+        <p className='no-history'>No search history yet 📜</p>
+      )}
+
       <div
         ref={historyRef}
         className={`history-list ${showHistory ? 'show' : ''}`}
@@ -296,6 +300,10 @@ function App() {
       >
         ⭐ Favorites: {showFavorites ? '🔺' : '🔻'}
       </p>}
+
+      {showFavorites && favorites.length === 0 && (
+        <p className='no-favorites'>No favorite cities yet ⭐</p>
+      )}
 
       <div className={`favorites-list ${showFavorites ? 'show' : ''}`}>
         {favorites.map((city) => (

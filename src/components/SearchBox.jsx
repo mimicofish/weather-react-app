@@ -14,7 +14,7 @@ function SearchBox({ city, setCity, onSearch, onGetLocationWeather, loading}) {
                 placeholder="Search your city here"
             />
             <button onClick={() => onSearch(city)} disabled={loading}>
-                {loading ? 'Loading...' : 'Search'}
+                {loading ? 'Searching...' : 'Search'}
             </button>
             <button onClick={onGetLocationWeather} disabled={loading}>
                 Use My Location
